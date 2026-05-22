@@ -1,0 +1,20 @@
+{
+  "questions": [
+    {
+      "question": "How does your pet react to strangers?",
+      "options": ["Friendly", "Shy", "Curious", "Ignore"]
+    },
+    {
+      "question": "Preferred activity?",
+      "options": ["Running", "Sleeping", "Exploring", "Eating"]
+    },
+    {
+      "question": "Energy level?",
+      "options": ["High", "Medium", "Low"]
+    },
+    {
+      "question": "Reaction to new food?",
+      "options": ["Instantly eats", "Sniffs carefully", "Ignores", "Waits"]
+    }
+  ]
+}

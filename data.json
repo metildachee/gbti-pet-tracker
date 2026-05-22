@@ -1,0 +1,35 @@
+{
+  "user": "Alice",
+  "pets": [
+    {
+      "name": "Milo",
+      "owner": "Alice",
+      "records": [
+        {
+          "time": "2026-05-22 08:00",
+          "type": "food",
+          "item": "kibble",
+          "amount": 20
+        },
+        {
+          "time": "2026-05-22 12:00",
+          "type": "drink",
+          "item": "water",
+          "amount": 10
+        },
+        {
+          "time": "2026-05-21 18:00",
+          "type": "food",
+          "item": "wet food",
+          "amount": 35
+        },
+        {
+          "time": "2026-05-20 09:00",
+          "type": "food",
+          "item": "kibble",
+          "amount": 25
+        }
+      ]
+    }
+  ]
+}

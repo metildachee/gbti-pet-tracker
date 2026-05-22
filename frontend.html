@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pet Dashboard</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #f7f1e3;
+            color: #3b2f2f;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #d9884e, #c26d3b);
+            color: white;
+            padding: 22px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .container {
+            padding: 20px;
+            display: grid;
+            gap: 16px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        }
+
+        .title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #f0c27b;
+        }
+
+        .chart-small {
+            max-width: 280px;
+            max-height: 280px;
+            width: 100%;
+            height: 260px;
+            margin: auto;
+        }
+        .timeline-controls {
+            margin-bottom: 6px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .timeline-btn {
+            background: #f0c27b;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.2s;
+        }
+
+        .timeline-btn.active {
+            background: #8c4b2f;
+            color: white;
+        }
+
+        .timeline-hint {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 4px;
+            margin-bottom: 10px;
+        }
+
+        .timeline {
+            display: grid;
+            width: 100%;
+            max-width: 100%;
+            gap: 4px;
+        }
+
+        /* unified cell style */
+        .cell {
+            aspect-ratio: 1;
+            border-radius: 6px;
+            font-size: 11px;   /* bigger text */
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2d2d2d;
+            transition: 0.2s;
+            user-select: none;
+        }
+        .grid-24 {
+            grid-template-columns: repeat(12, 1fr);
+        }
+
+        .grid-7 {
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        .grid-31 {
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        .grid-12 {
+            grid-template-columns: repeat(6, 1fr);
+        }
+
+        .cell:hover {
+            transform: scale(1.05);
+        }
+
+        button {
+            background: #d9884e;
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-right: 6px;
+            cursor: pointer;
+        }
+
+        .quiz-option {
+            display: block;
+            margin: 6px 0;
+        }
+
+        .result {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header" id="header">Loading...</div>
+
+<div class="container">
+
+    <!-- TOP INFO -->
+    <div class="grid">
+        <div class="card">
+            <div class="title">Health Status</div>
+            <div id="health"></div>
+        </div>
+
+        <div class="card">
+            <div class="title">Total Intake</div>
+            <div id="intake"></div>
+        </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="grid">
+
+        <div class="card">
+            <div class="title">Diet Breakdown</div>
+            <canvas id="pieChart" class="chart-small"></canvas>
+        </div>
+
+        <div class="card">
+            <div class="title">Intake Distribution</div>
+            <canvas id="barChart"></canvas>
+        </div>
+
+    </div>
+
+    <!-- TIMELINE -->
+    <div class="card">
+        <div class="title">Timeline</div>
+
+        <div class="timeline-controls">
+            <button class="timeline-btn active" onclick="setMode('day', this)">Day</button>
+            <button class="timeline-btn" onclick="setMode('week', this)">Week</button>
+            <button class="timeline-btn" onclick="setMode('month', this)">Month</button>
+            <button class="timeline-btn" onclick="setMode('year', this)">Year</button>
+        </div>
+
+        <div class="timeline-hint">
+            Click to display aggregate. The darker the cell, the more food has been consumed.
+        </div>
+
+        <div class="timeline" id="timeline"></div>
+    </div>
+
+    <!-- PERSONALITY TEST -->
+    <div class="card">
+        <div class="title">Personality Test</div>
+        <div id="quiz"></div>
+        <button onclick="submitQuiz()">Submit</button>
+        <div id="result" class="result"></div>
+    </div>
+
+</div>
+
+<script>
+const API = "http://127.0.0.1:5000";
+
+let quizData = null;
+
+// --------------------
+// Overview
+// --------------------
+fetch(`${API}/api/overview`)
+.then(r => r.json())
+.then(data => {
+    document.getElementById("header").innerText = data.pet_name;
+    document.getElementById("health").innerHTML =
+        `<span class="badge">${data.health}</span>`;
+    document.getElementById("intake").innerText =
+        data.total_intake + " units";
+});
+
+// --------------------
+// Summary + Charts
+// --------------------
+fetch(`${API}/api/summary`)
+.then(r => r.json())
+.then(data => {
+
+    const labels = Object.keys(data.foods);
+    const values = Object.values(data.foods);
+
+    new Chart(document.getElementById("pieChart"), {
+        type: "pie",
+        data: {
+            labels,
+            datasets: [{ data: values }]
+        }
+    });
+
+    new Chart(document.getElementById("barChart"), {
+        type: "bar",
+        data: {
+            labels,
+            datasets: [{
+                label: "Intake",
+                data: values
+            }]
+        }
+    });
+});
+
+// --------------------
+// Timeline
+// --------------------
+let currentBtn = null;
+
+function setActive(btn) {
+    if (currentBtn) currentBtn.classList.remove("active");
+    btn.classList.add("active");
+    currentBtn = btn;
+}
+
+function colorScale(value, max) {
+    let intensity = value / max;
+    return `rgba(34, 139, 34, ${0.15 + intensity * 0.85})`;
+}
+
+function loadTimeline(mode) {
+    fetch(`${API}/api/timeline?mode=${mode}`)
+    .then(r => r.json())
+    .then(data => {
+
+        const div = document.getElementById("timeline");
+        div.innerHTML = "";
+
+        const values = Object.values(data.data);
+        const max = Math.max(...values, 1);
+
+        div.className = "timeline";
+
+        // ---------------- UNIFIED LAYOUT ----------------
+
+        let items = [];
+        let gridCols = 12; // default fallback
+
+        if (mode === "day") {
+            gridCols = 12; // wrap 24 into 12x2 visually
+
+            for (let i = 0; i < 24; i++) {
+                let start = String(i).padStart(2, "0") + ":00";
+                let val = data.data[start] || 0;
+
+                items.push({
+                    label: `${start}`,
+                    value: val
+                });
+            }
+        }
+
+        else if (mode === "week") {
+            gridCols = 7;
+
+            const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+
+            days.forEach(d => {
+                items.push({
+                    label: d,
+                    value: data.data[d] || 0
+                });
+            });
+        }
+
+        else if (mode === "month") {
+            gridCols = 7;
+
+            for (let i = 1; i <= 31; i++) {
+                let key = String(i).padStart(2, "0");
+
+                items.push({
+                    label: String(i),
+                    value: data.data[key] || 0
+                });
+            }
+        }
+
+        else if (mode === "year") {
+            gridCols = 6;
+
+            const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+            months.forEach(m => {
+                items.push({
+                    label: m,
+                    value: data.data[m] || 0
+                });
+            });
+        }
+
+        // apply grid size
+        div.style.gridTemplateColumns = `repeat(${gridCols}, 1fr)`;
+
+        // render
+        items.forEach(item => {
+            let cell = document.createElement("div");
+            cell.className = "cell";
+            cell.style.background = colorScale(item.value, max);
+            cell.innerText = item.label;
+            div.appendChild(cell);
+        });
+    });
+}
+
+// default
+loadTimeline("day");
+
+function setMode(mode, btn) {
+    setActive(btn);
+    loadTimeline(mode);
+}
+// --------------------
+// Personality Test (LOAD JSON)
+// --------------------
+fetch(`${API}/api/personality`)
+.then(r => r.json())
+.then(data => {
+    quizData = data;
+
+    const quiz = document.getElementById("quiz");
+
+    data.questions.forEach((q, i) => {
+
+        const block = document.createElement("div");
+        block.innerHTML = `<p><b>${q.question}</b></p>`;
+
+        q.options.forEach(opt => {
+            block.innerHTML += `
+                <label class="quiz-option">
+                    <input type="radio" name="q${i}" value="${opt}">
+                    ${opt}
+                </label>
+            `;
+        });
+
+        quiz.appendChild(block);
+    });
+});
+
+// --------------------
+// Submit Quiz
+// --------------------
+function submitQuiz() {
+    let score = Math.random();
+
+    let type =
+        score < 0.25 ? "Energetic" :
+        score < 0.5 ? "Calm" :
+        score < 0.75 ? "Curious" :
+        "Lazy";
+
+    document.getElementById("result").innerText =
+        "Personality: " + type;
+}
+</script>
+
+</body>
+</html>
