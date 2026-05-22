@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+.env/
+
+# Flask
+instance/
+.webassets-cache
+
+# Jupyter (if ever used)
+.ipynb_checkpoints/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# JSON / local data (optional - uncomment if you don't want to commit data)
+# data.json
+
+# IDEs
+.vscode/
+.idea/
+
+# Frontend cache / temp
+node_modules/
+dist/
+build/
+
+# Temporary files
+*.tmp
+*.bak
