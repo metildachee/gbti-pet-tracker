@@ -119,7 +119,7 @@ type:"bar",
 data:{
 labels:Object.keys(d.foods),
 datasets:[{
-label: "Intake (units)",  // ← ADD THIS LINE
+label: "Intake (g)",  // ← ADD THIS LINE
 data:Object.values(d.foods),
 backgroundColor:"#7c5cff"
 }]
@@ -431,8 +431,10 @@ const res = await fetch(`${API}/api/personality/analyze`, {
 const data = await res.json();
 
 document.getElementById("personalityResult").innerHTML = `
-    <h3>✨ ${data.type}</h3>
+    <h3>✨ ${data.mbti_type}: ${data.personality_name}</h3>
     <p>${data.description}</p>
+    <p><strong>Strengths:</strong> ${data.strengths.join(', ')}</p>
+    <p><strong>Quirks:</strong> ${data.quirks.join(', ')}</p>
     <small>Confidence: ${(data.confidence * 100).toFixed(1)}%</small>
 `;
 }

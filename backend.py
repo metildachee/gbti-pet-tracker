@@ -191,24 +191,29 @@ def personality_analyze():
         "total_records": len(records)
     })
 
-    prompt = f"""
-    You are an AI pet behavior analyst. 
+    prompt = f"""You are a feline behavior analyst specializing in cat personality typing.
 
-    Given:
+This is a CAT. Using a "CAT-Personality" framework (similar to MBTI but for cats), analyze the data provided.
 
-    PET QUESTIONNAIRE:
-    {answers}
+CAT PERSONALITY DIMENSIONS:
+- **E vs I** (Explorer vs Indoor-lover): Adventurous seeker or homebody
+- **P vs C** (Playful vs Calm): High energy zoomies or serene observer
+- **F vs S** (Friendly vs Selective): Social butterfly or one-person cat
+- **T vs R** (Talkative vs Reserved): Vocal communicator or silent judge
 
-    FOOD SUMMARY:
-    {summary}
+DATA:
+QUESTIONNAIRE ANSWERS: {answers}
+FOOD PREFERENCES: {summary}
 
-    Return JSON:
-    {{
-        "type": "...",
-        "description": "...",
-        "confidence": 0-1
-    }}
-    """
+Return ONLY valid JSON in this exact format, no other text:
+{{
+    "mbti_type": "GTBI",
+    "personality_name": "The Curious Explorer",
+    "description": "2-3 sentences describing their unique cat personality",
+    "strengths": ["curious", "playful", "smart"],
+    "quirks": ["chases shadows", "hates closed doors"],
+    "confidence": 0.85
+}}"""
 
     client = ZhipuAI(api_key=os.getenv("ZHIPU_API_KEY"))
 
