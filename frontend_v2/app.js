@@ -389,45 +389,26 @@ fetch(`${API}/personality_test.json`)
 
 function renderQuiz(questions){
     const el = document.getElementById("quiz");
-
     if (!el) return;
 
-    let html = "";
-
-    html += questions.map((q, i) => {
+    el.innerHTML = questions.map((q, i) => {
         return `
-        <div style="margin-bottom:14px;">
+        <div class="question-block">
             <b>${q.question}</b>
-            <div>
-                ${q.options.map(opt => `
-                    <label style="display:block; margin-top:6px;">
-                        <input type="radio" name="q${i}" value="${opt}">
-                        ${opt}
-                    </label>
-                `).join("")}
-            </div>
+
+            ${q.options.map(opt => `
+                <label>
+                    <input type="radio" name="q${i}" value="${opt}">
+                    ${opt}
+                </label>
+            `).join("")}
         </div>
         `;
-    }).join("");
-
-    html += `
-        <button onclick="submitPersonality()" style="
-            margin-top:12px;
-            padding:10px 14px;
-            border-radius:10px;
-            border:none;
-            background:#7c5cff;
-            color:white;
-            font-weight:600;
-            cursor:pointer;
-        ">
+    }).join("") + `
+        <button class="quiz-submit" onclick="submitPersonality()">
             Analyze Personality 🧠
         </button>
-
-        <div id="personalityResult" style="margin-top:16px;"></div>
     `;
-
-    el.innerHTML = html;
 }
 async function submitPersonality(){
 
@@ -450,15 +431,8 @@ const res = await fetch(`${API}/api/personality/analyze`, {
 const data = await res.json();
 
 document.getElementById("personalityResult").innerHTML = `
-<div style="
-    padding:14px;
-    border-radius:12px;
-    background:rgba(124,92,255,0.1);
-    border:1px solid rgba(124,92,255,0.3);
-">
-    <h3>${data.type}</h3>
+    <h3>✨ ${data.type}</h3>
     <p>${data.description}</p>
-    <small>Confidence: ${data.confidence}</small>
-</div>
+    <small>Confidence: ${(data.confidence * 100).toFixed(1)}%</small>
 `;
 }
