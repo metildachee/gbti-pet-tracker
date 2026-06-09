@@ -28,7 +28,7 @@
             <div>
                 <div class="kicker">PET HEALTH SYSTEM</div>
                 <h1 id="header">Loading...</h1>
-                <div id="health" class="sub"></div>
+                <!-- <div id="health" class="sub"></div> -->
             </div>
 
             <div class="ring">
@@ -42,20 +42,19 @@
         </div>
 
         <div class="hero-grid">
+            <div class="metric">
+                <div id="safeRate" class="num">--</div>
+                <div class="label">Health</div>
+            </div>
 
             <div class="metric">
                 <div id="intake" class="num">--</div>
-                <div class="label">Total Intake</div>
+                <div class="label">Total Intake (g)</div>
             </div>
 
             <div class="metric">
                 <div id="mealCount" class="num">--</div>
                 <div class="label">Meals</div>
-            </div>
-
-            <div class="metric">
-                <div id="safeRate" class="num">--</div>
-                <div class="label">Safety</div>
             </div>
 
         </div>
@@ -77,9 +76,20 @@
     <!-- ANALYTICS -->
     <section class="grid reveal">
 
+        <!-- <div class="card"> -->
+            <!-- <h2>Diet Composition</h2>
+            <div id="foodBars"></div> -->
+        <!-- </div> -->
+
         <div class="card">
-            <h2>Diet Composition</h2>
-            <div id="foodBars"></div>
+            <h2>Behavior Heatmap</h2>
+            <div class="timeline-controls">
+                <button class="timeline-btn active" onclick="setMode('day', this)">📅 Day</button>
+                <button class="timeline-btn" onclick="setMode('week', this)">📆 Week</button>
+                <button class="timeline-btn" onclick="setMode('month', this)">📊 Month</button>
+                <button class="timeline-btn" onclick="setMode('year', this)">📈 Year</button>
+            </div>
+            <div id="timeline"></div>
         </div>
 
         <div class="card">
@@ -90,11 +100,24 @@
     </section>
 
     <!-- TIMELINE -->
-    <section class="card reveal">
-        <h2>Behavior Heatmap</h2>
-        <div id="timeline"></div>
-    </section>
+    <!-- <section class="card reveal">
 
+    </section> -->
+
+</div>
+
+<!-- VIDEO MODAL -->
+<div id="videoModal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeVideo()"></div>
+
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">Feeding Session</div>
+            <div class="close-btn" onclick="closeVideo()">✕</div>
+        </div>
+
+        <video id="videoPlayer" controls autoplay></video>
+    </div>
 </div>
 
 <script src="app.js"></script>

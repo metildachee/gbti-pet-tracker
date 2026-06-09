@@ -1,9 +1,9 @@
 {
-  "user": "Alice",
+  "user": "Makar",
   "pets": [
     {
       "name": "Milo",
-      "owner": "Alice",
+      "owner": "Makar",
       "records": [
         {
           "time": "2026-06-09 07:31",

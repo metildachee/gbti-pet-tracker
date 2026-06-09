@@ -53,7 +53,7 @@ def overview():
     records = pet["records"]
 
     return jsonify({
-        "pet_name": f"{pet['name']} ({pet['owner']} pet)",
+        "pet_name": f"{pet['name']} ({pet['owner']}'s Cat)",
         "health": compute_health(records),
         "total_events": len(records),
         "total_intake": sum(r.get("amount", 0) for r in records)
@@ -104,7 +104,8 @@ def timeline():
         if mode == "day":
             key = t.strftime("%H:00")
         elif mode == "week":
-            key = t.strftime("%A")
+            key = t.strftime("%A")  
+            key = key.split("day")[0]
         elif mode == "month":
             key = t.strftime("%d")
         else:
@@ -123,34 +124,31 @@ def get_records():
     pet = get_pet()
     return jsonify({"records": pet["records"]})
 
-@app.route("/video/<path:video_path>")
-def serve_video(video_path):
-    """Serve video files - handles absolute paths correctly"""
+@app.route("/video/<filename>")
+def serve_video(filename):
+    """Serve video files from the data directory"""
     from flask import send_file, abort
     import os
     from urllib.parse import unquote
     
-    # Decode the URL-encoded path
-    video_path = unquote(video_path)
+    # Decode the filename (in case it's URL-encoded)
+    filename = unquote(filename)
     
-    # Reconstruct the absolute path if it starts with Users/
-    if video_path.startswith('Users/'):
-        video_path = '/' + video_path
-    
-    # Also try the data directory as fallback
+    # Path to your data directory
     data_dir = os.path.join(os.path.dirname(__file__), "data")
-    possible_paths = [
-        video_path,  # The original path
-        os.path.join(data_dir, os.path.basename(video_path))  # Just the filename in data dir
-    ]
+    video_path = os.path.join(data_dir, filename)
     
-    for path in possible_paths:
-        if os.path.exists(path):
-            print(f"Serving video from: {path}")
-            return send_file(path, mimetype='video/mp4')
+    # Also handle absolute paths by extracting filename
+    if not os.path.exists(video_path) and '/' in filename:
+        filename = os.path.basename(filename)
+        video_path = os.path.join(data_dir, filename)
     
-    abort(404, description=f"Video not found. Tried: {possible_paths}")
-
+    print(f"Looking for video: {video_path}")  # Debug
+    
+    if not os.path.exists(video_path):
+        abort(404, description=f"Video not found: {filename}")
+    
+    return send_file(video_path, mimetype='video/mp4')
 # -----------------------
 # Serve frontend
 # -----------------------

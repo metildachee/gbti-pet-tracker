@@ -21,11 +21,11 @@ def convert_csv_to_json(csv_path, json_path):
     
     # Prepare JSON structure
     output = {
-        "user": "Alice",
+        "user": "Makar",
         "pets": [
             {
                 "name": "Milo",
-                "owner": "Alice",
+                "owner": "Makar",
                 "records": []
             }
         ]
