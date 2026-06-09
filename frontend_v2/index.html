@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Pet Intelligence</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="bg"></div>
+
+<div class="app">
+
+    <!-- HERO -->
+    <section class="hero reveal">
+
+        <div class="hero-top">
+
+            <div>
+                <div class="kicker">PET HEALTH SYSTEM</div>
+                <h1 id="header">Loading...</h1>
+                <div id="health" class="sub"></div>
+            </div>
+
+            <div class="ring">
+                <svg viewBox="0 0 120 120">
+                    <circle class="bg-ring" cx="60" cy="60" r="50"/>
+                    <circle class="progress-ring" cx="60" cy="60" r="50"/>
+                </svg>
+                <div class="ring-text" id="healthScore">--</div>
+            </div>
+
+        </div>
+
+        <div class="hero-grid">
+
+            <div class="metric">
+                <div id="intake" class="num">--</div>
+                <div class="label">Total Intake</div>
+            </div>
+
+            <div class="metric">
+                <div id="mealCount" class="num">--</div>
+                <div class="label">Meals</div>
+            </div>
+
+            <div class="metric">
+                <div id="safeRate" class="num">--</div>
+                <div class="label">Safety</div>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- INSIGHT -->
+    <section class="insight reveal">
+        <div class="spark">✨</div>
+        <div id="insightText">Analyzing behavior...</div>
+    </section>
+
+    <!-- FEED -->
+    <section class="section reveal">
+        <h2>Recent Activity</h2>
+        <div id="recentMeals"></div>
+    </section>
+
+    <!-- ANALYTICS -->
+    <section class="grid reveal">
+
+        <div class="card">
+            <h2>Diet Composition</h2>
+            <div id="foodBars"></div>
+        </div>
+
+        <div class="card">
+            <h2>Consumption Trend</h2>
+            <canvas id="barChart"></canvas>
+        </div>
+
+    </section>
+
+    <!-- TIMELINE -->
+    <section class="card reveal">
+        <h2>Behavior Heatmap</h2>
+        <div id="timeline"></div>
+    </section>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>

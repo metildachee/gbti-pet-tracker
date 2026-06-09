@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Pet Intelligence System</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="ambient"></div>
+
+<div class="app">
+
+<!-- SYSTEM HERO -->
+<section class="system-card reveal">
+
+    <div class="system-top">
+
+        <div>
+            <div class="system-label">SYSTEM STATUS</div>
+            <h1 id="header">Loading...</h1>
+            <div id="health" class="system-sub"></div>
+        </div>
+
+        <div class="pulse-ring" id="pulse"></div>
+
+    </div>
+
+    <div class="system-grid">
+
+        <div class="metric">
+            <div id="intake" class="num">--</div>
+            <div class="label">Intake</div>
+        </div>
+
+        <div class="metric">
+            <div id="mealCount" class="num">--</div>
+            <div class="label">Meals</div>
+        </div>
+
+        <div class="metric">
+            <div id="safeRate" class="num">--</div>
+            <div class="label">Safety</div>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- AI INSIGHT -->
+<section class="ai-card reveal">
+
+    <div class="ai-icon">🧠</div>
+
+    <div>
+        <div class="ai-title">Daily Intelligence Report</div>
+        <div id="insightText" class="ai-text"></div>
+    </div>
+
+</section>
+
+<!-- ALERT STRIP -->
+<section id="alert" class="alert hidden reveal"></section>
+
+<!-- FEED -->
+<section class="card reveal">
+    <h2>Recent Activity Stream</h2>
+    <div id="recentMeals"></div>
+</section>
+
+<!-- ANALYTICS -->
+<section class="grid reveal">
+
+    <div class="card">
+        <h2>Diet Composition</h2>
+        <canvas id="barChart"></canvas>
+    </div>
+
+    <div class="card">
+        <h2>Behavior Signature</h2>
+        <div id="timeline"></div>
+    </div>
+
+</section>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>

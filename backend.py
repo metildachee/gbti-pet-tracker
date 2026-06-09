@@ -4,7 +4,9 @@ from datetime import datetime
 from collections import defaultdict
 from flask_cors import CORS
 
-app = Flask(__name__)
+# app = Flask(__name__)
+# CORS(app, resources={r"/*": {"origins": "*"}})
+app = Flask(__name__, static_folder='frontend_v2', static_url_path='')
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # -----------------------
@@ -158,7 +160,7 @@ def serve_video(video_path):
 
 @app.route("/")
 def home():
-    return send_from_directory(".", "frontend.html")
+    return send_from_directory("frontend_v2", "index.html")
 
 
 if __name__ == "__main__":
