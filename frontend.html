@@ -213,7 +213,7 @@
 </div>
 
 <script>
-const API = "http://127.0.0.1:5000";
+const API = "http://127.0.0.1:5001";
 
 let quizData = null;
 
@@ -414,4 +414,19 @@ function submitQuiz() {
 </script>
 
 </body>
+
+<script>
+    console.log("Frontend loaded!");
+    
+    // Test each API endpoint
+    fetch('/api/overview')
+        .then(r => r.json())
+        .then(data => console.log("Overview data:", data))
+        .catch(e => console.error("Overview error:", e));
+        
+    fetch('/api/personality')
+        .then(r => r.json())
+        .then(data => console.log("Personality data:", data))
+        .catch(e => console.error("Personality error:", e));
+</script>
 </html>

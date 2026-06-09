@@ -1,0 +1,7 @@
+clip,duration_sec,sparse_eating,sparse_risk,sparse_conf,sparse_food,sparse_time,sparse_cost,dense5_eating,dense5_risk,dense5_conf,dense5_food,dense5_time,dense5_cost,chunked_eating,chunked_risk,chunked_conf,chunked_food,chunked_time,chunked_cost,chunked_api_calls
+test_clip_1.mp4,32.787,No,None,High,N/A,7.85,0.00576,Yes,Low,High,Cooked chicken,7.53,0.003,Yes,Low,High,Cooked chicken,11.01,0.015,5
+test_clip_2.mp4,2.194,Yes,Low,High,Dry pet food,5.96,0.00996,Yes,Low,High,Dry kibble,5.01,0.00192,Yes,Low,High,Commercial cat food,4.1,0.003,1
+test_clip_3.mp4,35.599,Yes,Low,High,Dry cat food,19.8,0.02676,Yes,Low,High,Cat food,10.15,0.003,Yes,Low,High,Cat food,12.22,0.018,6
+test_clip_4.mp4,3.767,Uncertain,High,Low,N/A,3.63,0.00996,Yes,Low,High,Dry kibble,5.54,0.00228,Yes,Low,High,Dry kibble,3.68,0.003,1
+test_clip_5.mp4,34.022,Yes,Medium,Medium,Raw Fish,16.33,0.02676,Yes,Medium,Medium,Raw fish,8.98,0.003,Yes,Medium,High,Raw fish,8.3,0.015,5
+test_clip_6.mp4,10.654,Yes,Low,High,Commercial Cat Food,9.29,0.00996,Yes,Low,High,Commercial cat food,9.69,0.003,Yes,Low,High,Dry kibble and wet food,8.21,0.006,2

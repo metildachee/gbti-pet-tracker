@@ -1,0 +1,7 @@
+clip,duration_sec,sparse_eating,sparse_risk,sparse_confidence,sparse_food,sparse_time_s,sparse_cost_usd,dense5_eating,dense5_risk,dense5_confidence,dense5_food,dense5_time_s,dense5_cost_usd,chunked_eating,chunked_risk,chunked_confidence,chunked_food,chunked_time_s,chunked_cost_usd,chunked_n_calls
+test_clip_1.mp4,32.787,No,None,High,N/A,6.61,0.00576,Yes,High,High,Cooked chicken or similar poultry,9.07,0.003,Yes,High,High,Chicken,11.06,0.015,5
+test_clip_2.mp4,2.194,Yes,Low,High,Dry pet food,3.61,0.00996,Yes,Low,High,Dry kibble,3.9,0.00192,No,Low,High,Cat food,3.1,0.003,1
+test_clip_3.mp4,35.599,Yes,Low,High,Cat food,20.21,0.02676,Yes,Low,High,Cat food,7.25,0.003,Yes,Low,High,Cat food,13.12,0.018,6
+test_clip_4.mp4,3.767,Uncertain,Medium,Low,N/A,4.8,0.00996,Yes,Medium,Medium,Sunflower seeds,6.27,0.00228,Uncertain,Low,Medium,Cat kibble,3.47,0.003,1
+test_clip_5.mp4,34.022,Yes,High,Medium,Raw Meat,16.86,0.02676,Yes,Medium,Medium,Meat,8.62,0.003,Yes,High,High,Meat,9.55,0.015,5
+test_clip_6.mp4,10.654,Yes,Low,High,Dry kibble,11.85,0.00996,Yes,Low,High,Dry kibble,8.96,0.003,Yes,Low,High,Dry kibble and wet food,7.39,0.006,2
