@@ -43,6 +43,7 @@
         .title {
             font-weight: bold;
             margin-bottom: 10px;
+            font-size: 18px;
         }
 
         .badge {
@@ -59,6 +60,7 @@
             height: 260px;
             margin: auto;
         }
+        
         .timeline-controls {
             margin-bottom: 6px;
             display: flex;
@@ -95,11 +97,10 @@
             gap: 4px;
         }
 
-        /* unified cell style */
         .cell {
             aspect-ratio: 1;
             border-radius: 6px;
-            font-size: 11px;   /* bigger text */
+            font-size: 11px;
             font-weight: bold;
             display: flex;
             align-items: center;
@@ -108,6 +109,7 @@
             transition: 0.2s;
             user-select: none;
         }
+        
         .grid-24 {
             grid-template-columns: repeat(12, 1fr);
         }
@@ -147,6 +149,116 @@
             margin-top: 10px;
             font-weight: bold;
         }
+        
+        /* Recent Meals Styles */
+        .meal-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background: #f9f9f9;
+            border-left: 4px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .meal-info {
+            flex: 1;
+        }
+        
+        .meal-time {
+            font-weight: bold;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .meal-food {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+        
+        .risk-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .risk-low {
+            background: #d4edda;
+            color: #155724;
+            border-color: #28a745;
+        }
+        
+        .risk-medium {
+            background: #fff3cd;
+            color: #856404;
+            border-color: #ffc107;
+        }
+        
+        .risk-high {
+            background: #f8d7da;
+            color: #721c24;
+            border-color: #dc3545;
+        }
+        
+        .video-btn {
+            background: #4a90e2;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        .video-btn:hover {
+            background: #357abd;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+        
+        .modal-content {
+            position: relative;
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 10px;
+        }
+        
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .close:hover {
+            color: #000;
+        }
+        
+        video {
+            width: 100%;
+            border-radius: 8px;
+        }
+        
+        .no-data {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+        }
     </style>
 </head>
 
@@ -167,6 +279,12 @@
             <div class="title">Total Intake</div>
             <div id="intake"></div>
         </div>
+    </div>
+    
+    <!-- NEW: Recent Meals Section -->
+    <div class="card">
+        <div class="title">🍽️ Recent Meals (Last 4 Days)</div>
+        <div id="recentMeals"></div>
     </div>
 
     <!-- CHARTS -->
@@ -212,10 +330,22 @@
 
 </div>
 
+<!-- Video Modal -->
+<div id="videoModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <video id="videoPlayer" controls autoplay>
+            <source id="videoSource" src="" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+</div>
+
 <script>
 const API = "http://127.0.0.1:5001";
 
 let quizData = null;
+let allRecords = []; // Store all records for recent meals
 
 // --------------------
 // Overview
@@ -229,6 +359,141 @@ fetch(`${API}/api/overview`)
     document.getElementById("intake").innerText =
         data.total_intake + " units";
 });
+
+// --------------------
+// Fetch all records for recent meals
+// --------------------
+fetch(`${API}/api/summary`)
+.then(r => r.json())
+.then(data => {
+    // Get records from a separate endpoint or store when loading
+    return fetch(`${API}/api/records`);
+})
+.then(r => r.json())
+.then(data => {
+    allRecords = data.records || [];
+    displayRecentMeals(allRecords);
+})
+.catch(err => {
+    console.error("Could not load records:", err);
+    displayRecentMeals([]);
+});
+
+// --------------------
+// Display Recent Meals (Last 4 Days)
+// --------------------
+function displayRecentMeals(records) {
+    const container = document.getElementById("recentMeals");
+    
+    if (!records || records.length === 0) {
+        container.innerHTML = '<div class="no-data">No meal records available</div>';
+        return;
+    }
+    
+    // Sort records by time (most recent first)
+    const sortedRecords = [...records].sort((a, b) => 
+        new Date(b.time) - new Date(a.time)
+    );
+    
+    // Get last 4 days of records (or all if less than 4 days)
+    const now = new Date();
+    const fourDaysAgo = new Date(now);
+    fourDaysAgo.setDate(now.getDate() - 4);
+    
+    const recentRecords = sortedRecords.filter(record => 
+        new Date(record.time) >= fourDaysAgo
+    );
+    
+    if (recentRecords.length === 0) {
+        container.innerHTML = '<div class="no-data">No meals in the last 4 days</div>';
+        return;
+    }
+    
+    // Group by day
+    const groupedByDay = {};
+    recentRecords.forEach(record => {
+        const date = new Date(record.time).toLocaleDateString();
+        if (!groupedByDay[date]) {
+            groupedByDay[date] = [];
+        }
+        groupedByDay[date].push(record);
+    });
+    
+    // Display each day
+    let html = '';
+    for (const [date, meals] of Object.entries(groupedByDay)) {
+        html += `<div style="margin-bottom: 15px;"><strong>📅 ${date}</strong></div>`;
+        
+        meals.forEach(meal => {
+            const time = new Date(meal.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const riskClass = `risk-${meal.risk ? meal.risk.toLowerCase() : 'low'}`;
+            const riskText = meal.risk || 'Unknown';
+            
+            // Get border color based on risk
+            let borderColor;
+            switch(meal.risk?.toLowerCase()) {
+                case 'high': borderColor = '#dc3545'; break;
+                case 'medium': borderColor = '#ffc107'; break;
+                default: borderColor = '#28a745';
+            }
+            
+            html += `
+                <div class="meal-item" style="border-left-color: ${borderColor}">
+                    <div class="meal-info">
+                        <div class="meal-time">🕒 ${time}</div>
+                        <div class="meal-food">🍗 Ate: <strong>${meal.item}</strong></div>
+                        <div>
+                            <span class="risk-badge ${riskClass}">⚠️ Risk: ${riskText}</span>
+                        </div>
+                    </div>
+                    <button class="video-btn" onclick="playVideo('${meal.video}')">
+                        📹 Watch Video
+                    </button>
+                </div>
+            `;
+        });
+    }
+    
+    container.innerHTML = html;
+}
+
+// --------------------
+// Play video in modal
+// --------------------
+function playVideo(videoPath) {
+    const modal = document.getElementById("videoModal");
+    const videoPlayer = document.getElementById("videoPlayer");
+    const videoSource = document.getElementById("videoSource");
+    console.log(videoPath)
+    
+    // Use the video path directly or construct proper URL
+    let videoUrl = videoPath;
+    if (!videoUrl.startsWith('http')) {
+        videoUrl = `${API}/video/${encodeURIComponent(videoPath)}`;
+    }
+    
+    videoSource.src = videoUrl;
+    videoPlayer.load();
+    modal.style.display = "block";
+    videoPlayer.play();
+}
+
+// Close modal when clicking X
+document.querySelector('.close').onclick = function() {
+    const modal = document.getElementById("videoModal");
+    const videoPlayer = document.getElementById("videoPlayer");
+    modal.style.display = "none";
+    videoPlayer.pause();
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById("videoModal");
+    if (event.target == modal) {
+        modal.style.display = "none";
+        videoPlayer.pause();
+    }
+}
 
 // --------------------
 // Summary + Charts
@@ -289,13 +554,11 @@ function loadTimeline(mode) {
 
         div.className = "timeline";
 
-        // ---------------- UNIFIED LAYOUT ----------------
-
         let items = [];
-        let gridCols = 12; // default fallback
+        let gridCols = 12;
 
         if (mode === "day") {
-            gridCols = 12; // wrap 24 into 12x2 visually
+            gridCols = 12;
 
             for (let i = 0; i < 24; i++) {
                 let start = String(i).padStart(2, "0") + ":00";
@@ -347,10 +610,8 @@ function loadTimeline(mode) {
             });
         }
 
-        // apply grid size
         div.style.gridTemplateColumns = `repeat(${gridCols}, 1fr)`;
 
-        // render
         items.forEach(item => {
             let cell = document.createElement("div");
             cell.className = "cell";
@@ -361,15 +622,15 @@ function loadTimeline(mode) {
     });
 }
 
-// default
 loadTimeline("day");
 
 function setMode(mode, btn) {
     setActive(btn);
     loadTimeline(mode);
 }
+
 // --------------------
-// Personality Test (LOAD JSON)
+// Personality Test
 // --------------------
 fetch(`${API}/api/personality`)
 .then(r => r.json())
@@ -396,9 +657,6 @@ fetch(`${API}/api/personality`)
     });
 });
 
-// --------------------
-// Submit Quiz
-// --------------------
 function submitQuiz() {
     let score = Math.random();
 
@@ -414,19 +672,4 @@ function submitQuiz() {
 </script>
 
 </body>
-
-<script>
-    console.log("Frontend loaded!");
-    
-    // Test each API endpoint
-    fetch('/api/overview')
-        .then(r => r.json())
-        .then(data => console.log("Overview data:", data))
-        .catch(e => console.error("Overview error:", e));
-        
-    fetch('/api/personality')
-        .then(r => r.json())
-        .then(data => console.log("Personality data:", data))
-        .catch(e => console.error("Personality error:", e));
-</script>
 </html>

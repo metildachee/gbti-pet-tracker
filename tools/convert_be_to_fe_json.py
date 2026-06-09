@@ -40,6 +40,29 @@ def convert_csv_to_json(csv_path, json_path):
         # Remove any extra quotes or spaces
         food_item = food_item.strip().strip('"')
         
+        # Get video filename
+        video_file = row.get('video', 'unknown.mp4')
+        video_file = video_file.strip().strip('"')
+        
+        # Get risk level (High/Medium/Low/None)
+        risk = row.get('dense5_risk', 'Unknown')
+        risk = risk.strip().strip('"')
+        
+        # Get confidence level
+        confidence = row.get('dense5_conf', 'Unknown')
+        confidence = confidence.strip().strip('"')
+        
+        # Get number of API calls (for chunked method)
+        n_calls = row.get('chunked_n_calls', '0')
+        try:
+            n_calls = int(n_calls)
+        except:
+            n_calls = 0
+        
+        # Get eating detection result
+        eating = row.get('dense5_eating', 'Unknown')
+        eating = eating.strip().strip('"')
+        
         # Determine which meal time to assign (rotate through breakfast, lunch, dinner)
         meal_type = ['breakfast', 'lunch', 'dinner'][day_counter % 3]
         
@@ -56,11 +79,16 @@ def convert_csv_to_json(csv_path, json_path):
         # Generate random amount (between 10 and 50 grams/units)
         amount = random.randint(10, 50)
         
-        # Create record without 'type' field as requested
+        # Create record with all fields
         record = {
             "time": record_time.strftime("%Y-%m-%d %H:%M"),
+            "video": video_file,
             "item": food_item,
-            "amount": amount
+            "amount": amount,
+            "risk": risk,
+            "confidence": confidence,
+            "eating_detected": eating,
+            # "api_calls": n_calls
         }
         
         output["pets"][0]["records"].append(record)
@@ -72,9 +100,14 @@ def convert_csv_to_json(csv_path, json_path):
     
     print(f"Successfully converted {csv_path} to {json_path}")
     print(f"Created {len(output['pets'][0]['records'])} records")
+    
+    # Print sample record to verify
+    if output["pets"][0]["records"]:
+        print("\nSample record:")
+        print(json.dumps(output["pets"][0]["records"][0], indent=2))
 
 if __name__ == "__main__":
-    csv_file = "/Users/metildachee/Desktop/hci/data/test_results_v2_summary.csv"
-    json_file = "/Users/metildachee/Desktop/hci/data_v2_summary.json"
+    csv_file = "/Users/metildachee/Desktop/hci/data/test_results_v3_summary.csv"
+    json_file = "/Users/metildachee/Desktop/hci/data.json"
     
     convert_csv_to_json(csv_file, json_file)
