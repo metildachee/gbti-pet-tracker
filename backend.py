@@ -3,6 +3,8 @@ import json
 from datetime import datetime
 from collections import defaultdict
 from flask_cors import CORS
+from zhipuai import ZhipuAI
+import os
 
 # app = Flask(__name__)
 # CORS(app, resources={r"/*": {"origins": "*"}})
@@ -155,6 +157,96 @@ def serve_video(filename):
 # @app.route("/")
 # def home():
 #     return send_from_directory(".", "frontend.html")
+
+from flask import send_from_directory
+
+@app.route("/personality_test.json")
+def personality_test():
+    return send_from_directory(
+        directory=".",
+        path="personality_test.json"
+    )
+
+from flask import request, jsonify
+import requests
+
+@app.route("/api/personality/analyze", methods=["POST"])
+def personality_analyze():
+
+    data = request.json
+    answers = data["answers"]
+
+    # fetch food summary
+    pet = get_pet()
+    records = pet["records"]
+
+    food_items = defaultdict(int)
+    total_time_spent = 0
+
+    for r in records:
+        food_items[r["item"]] += r.get("amount", 0)
+
+    summary = jsonify({
+        "foods": food_items,
+        "total_records": len(records)
+    })
+
+    prompt = f"""
+    You are an AI pet behavior analyst. 
+
+    Given:
+
+    PET QUESTIONNAIRE:
+    {answers}
+
+    FOOD SUMMARY:
+    {summary}
+
+    Return JSON:
+    {{
+        "type": "...",
+        "description": "...",
+        "confidence": 0-1
+    }}
+    """
+
+    client = ZhipuAI(api_key=os.getenv("ZHIPU_API_KEY"))
+
+    response = client.chat.completions.create(
+        model="GLM-4V-Flash",
+        messages=[  # ← MUST be an array
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        temperature=0.3,
+        max_tokens=500,
+        response_format={"type": "json_object"}
+    )
+    # response = client.chat.completions.create(
+    #     "https://api.glm.ai/v1/chat/completions",
+    #     headers={
+    #         "Authorization": "Bearer a4060ab3db7f2e385908ec593fbf0c49.7UvvZupcar5Faj8m",
+    #         "Content-Type": "application/json"
+    #     },
+    #     json={
+    #         "model": "glm-4",
+    #         "messages": [
+    #             {"role": "system", "content": "You are a behavioral pet psychologist."},
+    #             {"role": "user", "content": prompt}
+    #         ]
+    #     }
+    # )
+
+    content = response.choices[0].message.content
+    if isinstance(content, str):
+        result_json = json.loads(content)
+    else:
+        result_json = content
+
+    # CORRECT WAY - pass the dictionary as the first argument
+    return jsonify(result_json)
 
 @app.route("/")
 def home():

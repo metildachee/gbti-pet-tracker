@@ -377,3 +377,88 @@ window.setMode = function(mode, btn) {
 };
 // Remove the old setMode and loadTimeline functions to avoid conflicts
 // Keep only one timeline initialization
+
+let quizData = null;
+
+fetch(`${API}/personality_test.json`)
+.then(r => r.json())
+.then(data => {
+    quizData = data;
+    renderQuiz(data.questions);
+});
+
+function renderQuiz(questions){
+    const el = document.getElementById("quiz");
+
+    if (!el) return;
+
+    let html = "";
+
+    html += questions.map((q, i) => {
+        return `
+        <div style="margin-bottom:14px;">
+            <b>${q.question}</b>
+            <div>
+                ${q.options.map(opt => `
+                    <label style="display:block; margin-top:6px;">
+                        <input type="radio" name="q${i}" value="${opt}">
+                        ${opt}
+                    </label>
+                `).join("")}
+            </div>
+        </div>
+        `;
+    }).join("");
+
+    html += `
+        <button onclick="submitPersonality()" style="
+            margin-top:12px;
+            padding:10px 14px;
+            border-radius:10px;
+            border:none;
+            background:#7c5cff;
+            color:white;
+            font-weight:600;
+            cursor:pointer;
+        ">
+            Analyze Personality 🧠
+        </button>
+
+        <div id="personalityResult" style="margin-top:16px;"></div>
+    `;
+
+    el.innerHTML = html;
+}
+async function submitPersonality(){
+
+const answers = {};
+
+quizData.questions.forEach((q, i) => {
+    const selected = document.querySelector(`input[name="q${i}"]:checked`);
+    answers[q.question] = selected ? selected.value : null;
+});
+
+document.getElementById("personalityResult").innerHTML =
+"Analyzing personality... 🧠";
+
+const res = await fetch(`${API}/api/personality/analyze`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ answers })
+});
+
+const data = await res.json();
+
+document.getElementById("personalityResult").innerHTML = `
+<div style="
+    padding:14px;
+    border-radius:12px;
+    background:rgba(124,92,255,0.1);
+    border:1px solid rgba(124,92,255,0.3);
+">
+    <h3>${data.type}</h3>
+    <p>${data.description}</p>
+    <small>Confidence: ${data.confidence}</small>
+</div>
+`;
+}
